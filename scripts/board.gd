@@ -145,13 +145,13 @@ func _input(event: InputEvent):
 	if event.is_action_pressed("ui_down"):
 		move_piece(Vector2i(0,1))
 
-	# Shift para mostrar lado contrario
-	if event.is_action_pressed("ui_select") and current_piece != null:
-		var v = current_piece["value"]
-		var opp = 7 - v
-		current_piece["value"] = opp
-		current_piece["texture"] = dice_textures[opp]
-		queue_redraw() 
+	if event is InputEventKey:
+		if event.pressed and event.keycode == KEY_SPACE:
+			var v = current_piece["value"]
+			var opp = 7 - v
+			current_piece["value"] = opp
+			current_piece["texture"] = dice_textures[opp]
+			queue_redraw()
 
 func clear_lines():
 	for y in range(ROWS -1 , -1, -1):  # de abajo hacia arriba
