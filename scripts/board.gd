@@ -31,10 +31,7 @@ func _ready():
 		for x in range(COLS):
 			row.append(0)
 		grid.append(row)
-	for y in range(ROWS-5, ROWS):
-		for x in range(COLS):
-			grid[y][x] = randi() % 26 + 5
-
+		
 	# Crear timer de caída
 	add_child(fall_timer)
 	fall_timer.wait_time = 0.5
@@ -110,19 +107,9 @@ func _draw():
 			var rect = Rect2(x*TILE_SIZE, y*TILE_SIZE, TILE_SIZE-1, TILE_SIZE-1)
 			if grid[y][x] == 0:
 				draw_rect(rect, Color(0.2,0.2,0.2), false)
-			elif grid[y][x] >= 1 and grid [y][x] <= 6:
-				draw_texture_rect(dice_textures[grid[y][x]], rect, false)
 			else:
-				# valores de las filas especiales (5..30)
-				draw_rect(rect, Color(0.4,0.4,0.4), true)
-				draw_string(
-					ThemeDB.fallback_font, 
-					rect.position + Vector2(5,50), 
-					str(grid[y][x]),
-					HORIZONTAL_ALIGNMENT_CENTER,
-					-1,
-					24,
-					Color.BLACK)
+				# dado (1–6)	
+				draw_texture_rect(dice_textures[grid[y][x]], rect, false)
 
 	# dibujar pieza actual
 	if current_piece != null:
@@ -133,7 +120,6 @@ func _draw():
 				var rect = Rect2(px*TILE_SIZE, py*TILE_SIZE, TILE_SIZE-1, TILE_SIZE-1)
 				draw_texture_rect(current_piece["texture"], rect, false)
 				
-
 func _input(event: InputEvent):
 	# movimiento lateral continuo
 	if event.is_action_pressed("ui_left"):
@@ -149,13 +135,13 @@ func _input(event: InputEvent):
 	if event.is_action_pressed("ui_down"):
 		move_piece(Vector2i(0,1))
 
-	if event is InputEventKey:
-		if event.pressed and event.keycode == KEY_SPACE:
-			var v = current_piece["value"]
-			var opp = 7 - v
-			current_piece["value"] = opp
-			current_piece["texture"] = dice_textures[opp]
-			queue_redraw()
+	# Shift para mostrar lado contrario
+	if event.is_action_pressed("ui_select") and current_piece != null:
+		var v = current_piece["value"]
+		var opp = 7 - v
+		current_piece["value"] = opp
+		current_piece["texture"] = dice_textures[opp]
+		queue_redraw() 
 
 func clear_lines():
 	for y in range(ROWS -1 , -1, -1):  # de abajo hacia arriba
