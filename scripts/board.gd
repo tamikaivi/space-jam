@@ -13,7 +13,7 @@ var score := 0
 var move_dir := 0
 var move_accumulator := 0.0
 var move_delay := 0.12
-
+var grid_texture: Texture2D = load("res://sprites/grid.png")
 # sprites para cada valor de dado
 var dice_textures := {
 	1: preload("res://sprites/dado_1.png"),
@@ -104,9 +104,11 @@ func _draw():
 	# dibujar tablero
 	for y in range(ROWS):
 		for x in range(COLS):
+			if y == 0:
+				continue
 			var rect = Rect2(x*TILE_SIZE, y*TILE_SIZE, TILE_SIZE-1, TILE_SIZE-1)
 			if grid[y][x] == 0:
-				draw_rect(rect, Color(0.2,0.2,0.2), false)
+				draw_texture_rect(grid_texture, rect, false)
 			else:
 				# dado (1–6)	
 				draw_texture_rect(dice_textures[grid[y][x]], rect, false)
