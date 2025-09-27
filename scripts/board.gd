@@ -92,7 +92,11 @@ func lock_piece():
 	for cell in current_piece["cells"]:
 		var x = current_piece["pos"].x + cell.x
 		var y = current_piece["pos"].y + cell.y
-		if y >= 0:
+		print("YOU LOSE!", y)
+		if y <= 0:
+			game_over()
+			return
+		if y > 0:
 			grid[y][x] = current_piece["value"]
 	spawn_piece()  # nueva pieza
 	queue_redraw()
@@ -178,3 +182,15 @@ func _process(delta):
 		if move_accumulator >= move_delay:
 			move_piece(Vector2i(move_dir,0))
 			move_accumulator = 0.0
+
+func game_over():
+	print("YOU LOSE!")
+	fall_timer.stop()   # detener la caída automática
+	move_dir = 0
+	current_piece = null
+	# Opcional: mostrar mensaje en pantalla
+	var label = Label.new()
+	label.text = "YOU LOSE!"
+	label.position = Vector2(COLS * TILE_SIZE / 2 - 50, ROWS * TILE_SIZE / 2)
+	label.add_theme_color_override("font_color", Color(1,0,0))
+	add_child(label)
