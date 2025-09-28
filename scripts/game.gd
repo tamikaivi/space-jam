@@ -3,7 +3,7 @@ extends Control
 
 # Pre-carga la escena del leaderboard para instanciarla rápidamente
 const LEADERBOARD_SCENE = preload("res://scenes/leaderboard.tscn")
-
+const CONTROL_SCENE = preload("res://scenes/control.tscn")
 # Referencia al nodo Board. Su ruta es: CenterContainer/GameArea/Board
 @onready var board_node = $CenterContainer/GameArea/Board
 
@@ -43,7 +43,7 @@ func show_leaderboard():
 	get_tree().paused = true 
 	
 	# 2. Instanciar y añadir el Leaderboard
-	var leaderboard_instance = LEADERBOARD_SCENE.instantiate()
+	var leaderboard_instance = CONTROL_SCENE.instantiate()
 	
 	# 3. CRÍTICO: Asegurar que el Leaderboard se ejecute AUNQUE el juego esté pausado.
 	leaderboard_instance.set_process_mode(Node.PROCESS_MODE_ALWAYS) 
@@ -84,3 +84,4 @@ func submit_score(player_name: String, final_score: int):
 	print("Enviando score a Firebase para el jugador ", player_name, " con puntaje: ", final_score)
 	# FirebaseManager.submit_score(player_name, final_score)
 	pass
+	

@@ -11,13 +11,15 @@ config_version=5
 [application]
 
 config/name="SpaceJam"
-run/main_scene="uid://4lx7jl0kvtlq"
+run/main_scene="uid://cnojyllyec25w"
 config/features=PackedStringArray("4.4", "Forward Plus")
 config/icon="res://icon.svg"
 
 [autoload]
 
 Bridge="*res://addons/playgama_bridge/bridge.gd"
+SilentWolf="*res://addons/silent_wolf/SilentWolf.gd"
+Global="*res://global.gd"
 
 [editor]
 
@@ -26,7 +28,7 @@ version_control/autoload_on_startup=true
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/playgama_bridge/plugin.cfg")
+enabled=PackedStringArray("res://addons/playgama_bridge/plugin.cfg", "res://addons/silent_wolf/plugin.cfg")
 
 [rendering]
 

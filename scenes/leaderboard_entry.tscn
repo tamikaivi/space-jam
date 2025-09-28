@@ -1,6 +1,6 @@
-[gd_scene load_steps=2 format=3 uid="uid://cife8bd7upmid"]
+[gd_scene load_steps=2 format=3 uid="uid://y2ef67oa7dkt"]
 
-[ext_resource type="Script" uid="uid://cltl0faavm2nu" path="res://scripts/leaderboard_entry.gd" id="1_dw4eb"]
+[ext_resource type="Script" path="res://scripts/leaderboard_entry.gd" id="1_dw4eb"]
 
 [node name="LeaderboardEntry" type="PanelContainer"]
 anchors_preset = 15

@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://domrp4fmvwryh"]
 
-[ext_resource type="Script" uid="uid://dof7rtj5t3o2j" path="res://scripts/leaderboard.gd" id="1_mrg81"]
+[ext_resource type="Script" path="res://scripts/leaderboard.gd" id="1_mrg81"]
 
 [node name="Leaderboard" type="Control"]
 layout_mode = 3
