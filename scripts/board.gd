@@ -47,7 +47,7 @@ func _ready():
 func spawn_piece():
 	var value = randi() % 6 + 1
 	current_piece = {
-		"pos": Vector2i(4, 0),
+		"pos": Vector2i(2, 0),
 		"cells": [Vector2i(0,0)],
 		"value": value,
 		"texture": dice_textures[value]  # amarillo
