@@ -210,13 +210,13 @@ func _draw():
 		var entry = top_scores[i]
 		var rank = i + 1
 		var player_name = entry.get("player_name", "???")
-		var entry_score = entry.get("score", 0)
+		var entry_score = int(entry.get("score", 0))
 		
 		var name_text = "%d. %s" % [rank, player_name]
 		draw_string(font, Vector2(right_x + lb_x_offset, current_y), name_text, HORIZONTAL_ALIGNMENT_LEFT, -1, lb_entry_size, text_color)
 		
 		var score_text = str(entry_score)
-		var score_x_pos = right_x + 250
+		var score_x_pos = right_x + 350
 		var score_text_width = font.get_string_size(score_text, lb_entry_size).x
 		
 		draw_string(font, 
@@ -351,13 +351,14 @@ func check_play(row_data: Array) -> int:
 
 
 func game_over():
-	print("YOU LOSE!")
+	print("GAME OVER! Final Score: ", score)
 	fall_timer.stop()   # detener la caída automática
 	move_dir = 0
 	current_piece = null
 	# Opcional: mostrar mensaje en pantalla
-	var label = Label.new()
-	label.text = "YOU LOSE!"
-	label.position = Vector2(COLS * TILE_SIZE / 2 - 50, ROWS * TILE_SIZE / 2)
-	label.add_theme_color_override("font_color", Color(1,0,0))
-	add_child(label)
+	var game_over_scene = load("res://scenes/game_over.tscn")
+	var game_over_instance = game_over_scene.instantiate()
+	game_over_instance.final_score = score
+	
+	get_tree().root.add_child(game_over_instance)
+	call_deferred("queue_free")
