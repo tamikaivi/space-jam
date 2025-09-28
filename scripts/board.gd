@@ -33,6 +33,8 @@ var dice_textures := {
 	5: preload("res://sprites/dado_5.png"),
 	6: preload("res://sprites/dado_6.png")
 }
+var top_scores := []
+const LEADERBOARD_NAME := "main"
 
 func _ready():
 	# Inicializar grilla vacía
@@ -54,8 +56,25 @@ func _ready():
 	# Spawnear primera pieza
 	spawn_piece()
 	queue_redraw()
-
+	get_top_scores()
 # Spawnea una pieza tipo O (2x2) centrada arriba
+# Función para solicitar el Top 10 a SilentWolf
+func get_top_scores():
+	# Asume que tu SilentWolf.gd está como Singleton
+	# La API de SilentWolf usa señales para notificar cuando recibe los datos
+	var scores_node = SilentWolf.Scores.get_scores(10, LEADERBOARD_NAME)
+	scores_node.sw_get_scores_complete.connect(_on_scores_received)
+
+func _on_scores_received(scores_data):
+	if scores_data.success:
+		top_scores = scores_data.scores
+		print("SilentWolf Top 10 scores received successfully!")
+	else:
+		# Manejo de errores (ej. sin conexión a internet)
+		print("Error fetching SilentWolf scores: ", scores_data.error)
+	# Forzar un redibujo para mostrar los nuevos puntajes
+	queue_redraw()
+
 func spawn_piece():
 	var value = randi() % 6 + 1
 	current_piece = {
@@ -163,16 +182,54 @@ func _draw():
 
 	var panel_x := COLS * TILE_SIZE
 # ------------------
-# Panel izquierdo
+# Panel derecho
 # ------------------
 	var panel_width: int = SIDE_PANEL_WIDTH * TILE_SIZE
 	var font := ThemeDB.fallback_font
-
+	
 	var right_x := COLS * TILE_SIZE
 	var right_rect = Rect2(right_x + 75, 80, 241, 40)
+	
+	var score_font_size := 24
+	var current_y := 100
+	var x_offset := 100
 	#draw_rect(right_rect, Color.RED, true)
-	draw_string(font, Vector2(right_x + 100, 100), "Score", HORIZONTAL_ALIGNMENT_LEFT, -1, 24, Color.WHITE)
+	draw_string(font, Vector2(right_x + x_offset, current_y), "SCORE", HORIZONTAL_ALIGNMENT_LEFT, -1, score_font_size, Color.YELLOW)
 	draw_string(font, Vector2(right_x + 125, 140),  str(score), HORIZONTAL_ALIGNMENT_LEFT, -1, 24, Color.WHITE)
+	current_y += score_font_size + 10
+	current_y += score_font_size + 40
+	
+	var lb_title_size := 22
+	var lb_entry_size := 18
+	var entry_line_spacing := lb_entry_size + 4
+	var lb_x_offset := 80
+	
+	draw_string(font, Vector2(right_x + lb_x_offset, current_y), "TOP 10 SCORES", HORIZONTAL_ALIGNMENT_LEFT, -1, lb_title_size, Color.ORANGE_RED)
+	current_y += lb_title_size + 10
+	for i in range(min(top_scores.size(), 10)):
+		var entry = top_scores[i]
+		var rank = i + 1
+		var player_name = entry.get("player_name", "???")
+		var entry_score = entry.get("score", 0)
+		
+		var name_text = "%d. %s" % [rank, player_name]
+		draw_string(font, Vector2(right_x + lb_x_offset, current_y), name_text, HORIZONTAL_ALIGNMENT_LEFT, -1, lb_entry_size, text_color)
+		
+		var score_text = str(entry_score)
+		var score_x_pos = right_x + 250
+		var score_text_width = font.get_string_size(score_text, lb_entry_size).x
+		
+		draw_string(font, 
+			Vector2(score_x_pos - score_text_width, current_y), # Ajusta la posición de inicio
+			score_text, 
+			HORIZONTAL_ALIGNMENT_LEFT, 
+			-1, 
+			lb_entry_size, 
+			Color.GREEN_YELLOW)
+		
+		current_y += entry_line_spacing
+	
+
 
 
 
