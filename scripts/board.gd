@@ -24,6 +24,7 @@ var move_accumulator := 0.0
 var move_delay := 0.12
 var SIDE_PANEL_WIDTH := 3
 var grid_texture: Texture2D = load("res://sprites/grid.png")
+var logo: Texture2D = load("res://sprites/logo.png")
 # sprites para cada valor de dado
 var dice_textures := {
 	1: preload("res://sprites/dado_1.png"),
@@ -180,6 +181,8 @@ func _draw():
 				var rect = Rect2(px*TILE_SIZE, py*TILE_SIZE, TILE_SIZE-1, TILE_SIZE-1)
 				draw_texture_rect(current_piece["texture"], rect, false)
 
+	var rect = Rect2(-115, -130,550, 300)
+	draw_texture_rect(logo, rect, false)
 	var panel_x := COLS * TILE_SIZE
 # ------------------
 # Panel derecho
