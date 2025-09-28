@@ -22,6 +22,7 @@ var score := 0
 var move_dir := 0
 var move_accumulator := 0.0
 var move_delay := 0.12
+var SIDE_PANEL_WIDTH := 3
 var grid_texture: Texture2D = load("res://sprites/grid.png")
 # sprites para cada valor de dado
 var dice_textures := {
@@ -111,6 +112,7 @@ func lock_piece():
 
 # Dibujar grilla y pieza
 func _draw():
+	draw_rect(Rect2(Vector2.ZERO, Vector2(COLS * TILE_SIZE, ROWS * TILE_SIZE)), Color.BLACK)
 	# dibujar tablero
 	for y in range(ROWS):
 		for x in range(COLS):
@@ -155,7 +157,24 @@ func _draw():
 			if py >= 0:
 				var rect = Rect2(px*TILE_SIZE, py*TILE_SIZE, TILE_SIZE-1, TILE_SIZE-1)
 				draw_texture_rect(current_piece["texture"], rect, false)
-				
+
+	var panel_x := COLS * TILE_SIZE
+# ------------------
+# Panel izquierdo
+# ------------------
+	var panel_width: int = SIDE_PANEL_WIDTH * TILE_SIZE
+	var font := ThemeDB.fallback_font
+
+	var right_x := COLS * TILE_SIZE
+	var right_rect = Rect2(right_x, 0, panel_width, ROWS * TILE_SIZE)
+	draw_rect(right_rect, Color.BLACK, true)
+
+	draw_string(font, Vector2(right_x + 20, 50), "Score: " + str(score), HORIZONTAL_ALIGNMENT_LEFT, -1, 24, Color.WHITE)
+
+# Ejemplo: dado en el panel derecho
+	var right_icon_rect = Rect2(right_x + 20, 100, 64, 64)
+
+
 func _input(event: InputEvent):
 	# movimiento lateral continuo
 	if event.is_action_pressed("ui_left"):

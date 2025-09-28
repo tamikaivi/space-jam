@@ -27,3 +27,7 @@ version_control/autoload_on_startup=true
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/playgama_bridge/plugin.cfg")
+
+[rendering]
+
+viewport/transparent_background=true
