@@ -1,0 +1,29 @@
+[gd_scene load_steps=2 format=3 uid="uid://cife8bd7upmid"]
+
+[ext_resource type="Script" uid="uid://cltl0faavm2nu" path="res://scripts/leaderboard_entry.gd" id="1_dw4eb"]
+
+[node name="LeaderboardEntry" type="PanelContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_dw4eb")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="rank" type="Label" parent="HBoxContainer"]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+text = "RANK"
+
+[node name="name" type="Label" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+text = "NAME"
+
+[node name="score" type="Label" parent="HBoxContainer"]
+layout_mode = 2
+text = "SCORE"
