@@ -5,6 +5,15 @@ const COLS := 5
 const ROWS := 10
 const TILE_SIZE := 64
 
+# Nuevo array para los valores objetivo
+var target_rail := []
+
+# Target Rail Configuración
+const MIN_TARGET_VALUE := 5
+const MAX_TARGET_VALUE := 30
+const TARGET_RAIL_COLS := 1 # La columna para los números de objetivo
+const TARGET_RAIL_OFFSET := -1 # Dibuja una celda a la izquierda de la columna 0
+
 var grid := []                # grilla del tablero
 var current_piece = null  # pieza actual
 var score := 0
@@ -31,6 +40,7 @@ func _ready():
 		for x in range(COLS):
 			row.append(0)
 		grid.append(row)
+		target_rail.append(randi_range(MIN_TARGET_VALUE, MAX_TARGET_VALUE)) # Godot 4: randi_range
 		
 	# Crear timer de caída
 	add_child(fall_timer)
@@ -112,8 +122,32 @@ func _draw():
 			else:
 				# dado (1–6)	
 				draw_texture_rect(dice_textures[grid[y][x]], rect, false)
-
+	
+	var fontNumbers = ThemeDB.fallback_font
+	var font_size = ThemeDB.fallback_font_size
+	var text_color = Color.WHITE
+	for y in range(ROWS):
+		var target_value = target_rail[y]
+		var target_text = str(target_value)
+		
+		var px = (TARGET_RAIL_OFFSET * TILE_SIZE) + TILE_SIZE / 2
+		var py = (y * TILE_SIZE) + TILE_SIZE / 2
+		var position = Vector2(px, py)
+		
+		var text_size = fontNumbers.get_string_size(target_text, font_size)
+		position -= text_size / 2.0
+		
+		draw_string(
+			fontNumbers, 
+			position, 
+			target_text,
+			HORIZONTAL_ALIGNMENT_CENTER,
+			-1,
+			font_size,
+			text_color)
 	# dibujar pieza actual
+	
+	
 	if current_piece != null:
 		for cell in current_piece["cells"]:
 			var px = current_piece["pos"].x + cell.x
@@ -170,6 +204,44 @@ func _process(delta):
 		if move_accumulator >= move_delay:
 			move_piece(Vector2i(move_dir,0))
 			move_accumulator = 0.0
+
+# En board.gd
+# Retorna el puntaje base de la jugada (0 si no hay jugada)
+func check_play(row_data: Array) -> int:
+	# row_data es un array de 5 valores de dados [d1, d2, d3, d4, d5]
+	if row_data.size() != COLS: return 0
+	
+	var counts := {} # Frecuencia de cada dado {valor: conteo}
+	var values := [] # Valores únicos para escaleras
+	
+	for v in row_data:
+		counts[v] = counts.get(v, 0) + 1
+		if v not in values:
+			values.append(v)
+	var num_unique = counts.size()
+	var max_count = 0
+	for c in counts.values():
+		max_count = max(max_count, c)
+		# 1. Cinco Iguales (Five of a Kind)
+	if num_unique == 1:
+		return 500
+		# 2. Escalera (Straight)
+	if num_unique == 5:
+		values.sort() # Ordenar [1, 2, 3, 4, 5] o [2, 3, 4, 5, 6]
+		var is_straight := true
+		for i in range(values.size() - 1):
+			if values[i+1] != values[i] + 1:
+				is_straight = false
+				break
+		if is_straight:
+			return 400
+	# 3. Full House (Tres iguales y un par)
+	if num_unique == 2:
+		if max_count == 3: # max_count es 3 (tres iguales) y el otro es 2 (par)
+			return 200
+			# No hay jugada reconocida
+	return 0
+
 
 func game_over():
 	print("YOU LOSE!")
