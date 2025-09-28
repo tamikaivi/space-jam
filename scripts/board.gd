@@ -166,13 +166,11 @@ func _draw():
 	var font := ThemeDB.fallback_font
 
 	var right_x := COLS * TILE_SIZE
-	var right_rect = Rect2(right_x, 0, panel_width, ROWS * TILE_SIZE)
-	draw_rect(right_rect, Color.BLACK, true)
+	var right_rect = Rect2(right_x + 75, 80, 241, 40)
+	#draw_rect(right_rect, Color.RED, true)
+	draw_string(font, Vector2(right_x + 100, 100), "Score", HORIZONTAL_ALIGNMENT_LEFT, -1, 24, Color.WHITE)
+	draw_string(font, Vector2(right_x + 125, 140),  str(score), HORIZONTAL_ALIGNMENT_LEFT, -1, 24, Color.WHITE)
 
-	draw_string(font, Vector2(right_x + 20, 50), "Score: " + str(score), HORIZONTAL_ALIGNMENT_LEFT, -1, 24, Color.WHITE)
-
-# Ejemplo: dado en el panel derecho
-	var right_icon_rect = Rect2(right_x + 20, 100, 64, 64)
 
 
 func _input(event: InputEvent):
