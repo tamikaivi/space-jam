@@ -41,11 +41,12 @@ func _ready():
 		for x in range(COLS):
 			row.append(0)
 		grid.append(row)
-		target_rail.append(randi_range(MIN_TARGET_VALUE, MAX_TARGET_VALUE)) # Godot 4: randi_range
+		if y > 0: 
+			target_rail.append(randi_range(MIN_TARGET_VALUE, MAX_TARGET_VALUE)) # Godot 4: randi_range
 		
 	# Crear timer de caída
 	add_child(fall_timer)
-	fall_timer.wait_time = 0.5
+	fall_timer.wait_time = 0.8
 	fall_timer.one_shot = false
 	fall_timer.timeout.connect(Callable(self, "_on_fall_timeout"))
 	fall_timer.start()
@@ -124,16 +125,18 @@ func _draw():
 			else:
 				# dado (1–6)	
 				draw_texture_rect(dice_textures[grid[y][x]], rect, false)
-	
+	# Dibujar Numeros Izquierda
 	var fontNumbers = ThemeDB.fallback_font
 	var font_size = ThemeDB.fallback_font_size
 	var text_color = Color.WHITE
-	for y in range(ROWS):
-		var target_value = target_rail[y]
+	for target_index in range(target_rail.size()):
+		var target_value = target_rail[target_index]
 		var target_text = str(target_value)
 		
+		var grid_y = target_index + 1
+		
 		var px = (TARGET_RAIL_OFFSET * TILE_SIZE) + TILE_SIZE / 2
-		var py = (y * TILE_SIZE) + TILE_SIZE / 2
+		var py = (grid_y * TILE_SIZE) + TILE_SIZE / 2
 		var position = Vector2(px, py)
 		
 		var text_size = fontNumbers.get_string_size(target_text, font_size)
@@ -143,7 +146,7 @@ func _draw():
 			fontNumbers, 
 			position, 
 			target_text,
-			HORIZONTAL_ALIGNMENT_CENTER,
+			HORIZONTAL_ALIGNMENT_FILL,
 			-1,
 			font_size,
 			text_color)
@@ -203,20 +206,50 @@ func clear_lines():
 		var first_val = grid[y][0]
 		if first_val == 0:
 			continue
+		var row_data = grid[y]
 		var full:= true
 		for x in range(COLS):
-			if grid[y][x] != first_val:
+			if row_data[x] == 0:
 				full = false
 				break
 		if full:
-			grid.remove_at(y)
-			var new_row = []
-			for i in range(COLS):
-				new_row.append(0)
-			grid.insert(0, new_row)
-			score += 10 * first_val
-			print("Score: ", score)
+			var target_index = y - 1
+			if target_index < 0 or target_index >= target_rail.size():
+				continue
+				
+			var target_value = target_rail[target_index]
+			var sum_value = 0;
+			for v in row_data:
+				sum_value += v
+			var play_score = check_play(row_data)
+			var base_score = 0;
+			var is_combo = false
 			
+			if sum_value == target_value:
+				base_score = 600
+			if base_score > 0 and play_score > 0:
+				is_combo= true
+			var line_score = base_score + play_score
+			if is_combo:
+				line_score *= 2
+			
+			if line_score >0:
+				score += line_score
+				print("Línea completada! Puntos: ", line_score, " (Combo: ", is_combo, ")", " Nuevo Score: ", score)
+					
+				grid.remove_at(y)
+				var new_row = []
+				for i in range(COLS):
+					new_row.append(0)
+				grid.insert(0, new_row)
+			
+				target_rail.remove_at(target_index)
+				target_rail.insert(0, randi_range(MIN_TARGET_VALUE, MAX_TARGET_VALUE))
+				y += 1
+			else: 
+				pass
+	queue_redraw()
+	
 func _process(delta):
 	if move_dir != 0:
 		move_accumulator += delta
