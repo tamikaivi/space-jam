@@ -40,6 +40,17 @@ const GAME_BGM = preload("res://audio/freedom.mp3")
 const LINE_CLEAR_SFX = preload("res://audio/power_up.wav")
 const DICE_MOVE =  preload("res://audio/jump.wav")
 
+#Modificadores de velocidad
+const SPEED_TIERS = [
+	[0,    0.8],  # Default speed
+	[1000, 0.6],  # After 1000 points
+	[2000, 0.4],  # After 2000 points
+	[4000, 0.3],  # After 4000 points
+	[6000, 0.2],  # After 6000 points
+	# Add more tiers as needed!
+]
+var current_speed_tier = 0
+
 func _ready():
 	# Inicializar grilla vacía
 	for y in range(ROWS):
@@ -237,9 +248,6 @@ func _draw():
 		current_y += entry_line_spacing
 	
 
-
-
-
 func _input(event: InputEvent):
 	# movimiento lateral continuo
 	if event.is_action_pressed("ui_left"):
@@ -300,7 +308,8 @@ func clear_lines():
 			if line_score >0:
 				score += line_score
 				print("Línea completada! Puntos: ", line_score, " (Combo: ", is_combo, ")", " Nuevo Score: ", score)
-				AudioPlayer.play_sfx(LINE_CLEAR_SFX)	
+				AudioPlayer.play_sfx(LINE_CLEAR_SFX)
+				check_speed_increase() 
 				grid.remove_at(y)
 				var new_row = []
 				for i in range(COLS):
@@ -343,7 +352,7 @@ func check_play(row_data: Array) -> int:
 		return 500
 		# 2. Escalera (Straight)
 	if num_unique == 5:
-		values.sort() # Ordenar [1, 2, 3, 4, 5] o [2, 3, 4, 5, 6]
+		values.sort()
 		var is_straight := true
 		for i in range(values.size() - 1):
 			if values[i+1] != values[i] + 1:
@@ -351,20 +360,33 @@ func check_play(row_data: Array) -> int:
 				break
 		if is_straight:
 			return 400
-	# 3. Full House (Tres iguales y un par)
-	if num_unique == 2:
-		if max_count == 3: # max_count es 3 (tres iguales) y el otro es 2 (par)
+	# Poker y full house
+	if num_unique == 2: 
+		if max_count == 4: # una cuadra y uno distinto (poker)
+			return 300 
+		if max_count == 3: # (tres iguales) y el otro es 2 (par) (full house)
 			return 200
-			# No hay jugada reconocida
+			# No logro nada el jugador XD
 	return 0
-
+	
+func check_speed_increase():
+	if current_speed_tier + 1 < SPEED_TIERS.size():
+		var next_tier_index = current_speed_tier + 1
+		var next_tier_threshold = SPEED_TIERS[next_tier_index][0]
+		var next_tier_speed = SPEED_TIERS[next_tier_index][1]
+		
+		if score >= next_tier_threshold:
+			fall_timer.wait_time = next_tier_speed
+			fall_timer.start()
+			current_speed_tier = next_tier_index
+			print("Speed increased! New fall time: ", fall_timer.wait_time)
 
 func game_over():
 	print("GAME OVER! Final Score: ", score)
 	fall_timer.stop()   # detener la caída automática
 	move_dir = 0
 	current_piece = null
-	# Opcional: mostrar mensaje en pantalla
+
 	var game_over_scene = load("res://scenes/game_over.tscn")
 	var game_over_instance = game_over_scene.instantiate()
 	game_over_instance.final_score = score
