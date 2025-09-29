@@ -36,6 +36,9 @@ var dice_textures := {
 }
 var top_scores := []
 const LEADERBOARD_NAME := "main"
+const GAME_BGM = preload("res://audio/freedom.mp3")
+const LINE_CLEAR_SFX = preload("res://audio/power_up.wav")
+const DICE_MOVE =  preload("res://audio/jump.wav")
 
 func _ready():
 	# Inicializar grilla vacía
@@ -58,6 +61,7 @@ func _ready():
 	spawn_piece()
 	queue_redraw()
 	get_top_scores()
+	AudioPlayer.play_bgm(GAME_BGM)
 # Spawnea una pieza tipo O (2x2) centrada arriba
 # Función para solicitar el Top 10 a SilentWolf
 func get_top_scores():
@@ -239,8 +243,10 @@ func _draw():
 func _input(event: InputEvent):
 	# movimiento lateral continuo
 	if event.is_action_pressed("ui_left"):
+		AudioPlayer.play_sfx(DICE_MOVE)
 		move_dir = -1
 	elif event.is_action_pressed("ui_right"):
+		AudioPlayer.play_sfx(DICE_MOVE)
 		move_dir = 1
 	elif event.is_action_released("ui_left") and move_dir == -1:
 		move_dir = 0
@@ -294,7 +300,7 @@ func clear_lines():
 			if line_score >0:
 				score += line_score
 				print("Línea completada! Puntos: ", line_score, " (Combo: ", is_combo, ")", " Nuevo Score: ", score)
-					
+				AudioPlayer.play_sfx(LINE_CLEAR_SFX)	
 				grid.remove_at(y)
 				var new_row = []
 				for i in range(COLS):

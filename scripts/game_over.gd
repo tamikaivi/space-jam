@@ -11,12 +11,15 @@ var final_score: int = 0
 @onready var name_input: LineEdit = $VBoxContainer/NameInput
 @onready var submit_button: Button = $VBoxContainer/Submit
 
+const GAME_OVER_BGM = preload("res://audio/mateo2.mp3")
+
 func _ready():
 	# 1. Muestra la puntuación recibida
 	score_label.text = "YOUR FINAL SCORE: " + str(final_score)
 	name_input.grab_focus()
 	# 2. Conecta la acción al botón
 	submit_button.pressed.connect(_on_submit_button_pressed)
+	AudioPlayer.play_bgm(GAME_OVER_BGM)
 
 func _on_submit_button_pressed():
 	var player_name = name_input.text.strip_edges()

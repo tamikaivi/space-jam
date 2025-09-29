@@ -20,6 +20,7 @@ config/icon="res://icon.svg"
 Bridge="*res://addons/playgama_bridge/bridge.gd"
 SilentWolf="*res://addons/silent_wolf/SilentWolf.gd"
 Global="*res://global.gd"
+AudioPlayer="*res://scripts/audio_player.gd"
 
 [editor]
 
